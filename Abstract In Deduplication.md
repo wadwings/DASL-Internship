@@ -58,7 +58,7 @@ there are five key stages:
 
 - The data deduplication mainly focuses on eliminating identical data, rather than identify the records that represent the same entity which is used widely.
 
-## data reduction
+## data reduplication
 
 ### The fundamental limit
 
@@ -66,3 +66,21 @@ $$
 H(X) = E(I(X)) = ^{X^n}_{i=1}{P(x_i)I(x_i)}=-^{X^n}_{i=1}P(x_i)\log_bP(x_i)
 $$
 
+### Former Approaches
+
+Early data compression approaches use the Statistical model based coding, the entropy coding.
+
+- like the Huffman coding
+
+new approaches called dictionary model based coding.
+
+Delta compression was to target the compression of similar files.
+
+### Key features
+
+- eliminate redundancy at the chunk level
+  - file-level deduplication was proposed earlier
+    - chunk-level usually has better compression performance than file-level
+- the schemes of chunk-level duplicate elimination and SHA1-based fingerprinting
+- chunking approaches include fixed-size chunking and variable-size chunking
+  - fixed-size chunking has problem with boundary-shift problem
