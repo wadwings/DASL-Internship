@@ -228,3 +228,15 @@ __NED__ groups chunks into segments and identifies the fragmented segments befor
 
 ### Garbage collection
 
+#### Reference count approach
+
+the number of times this chunk is used
+
+__Wei et al__ employ this naive reference count approach for GC
+__Simha et al__ propose a hybrid approach which maintain a reference count and an expiration time for each physical block
+__Strzelczak et al__ propose a concurrent deletion algorithm based on epoch and marks to separate old and newly written data
+
+#### Mark-and-sweep approach and its variants
+
+- the mark stage: all files are traversed so as to mark the used chunks
+- the sweep stage: all chunks are swept and unmarked chunks are reclaimed
