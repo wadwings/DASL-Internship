@@ -128,15 +128,14 @@ $$
 
 - computational overhead
   the frequent computations of fingerprint on sliding window are time-consuming
-
   - SampleByte
-
+  
   - LBFS
-
+  
   - Gear
-
+  
   - AE
-
+  
 - inaccuracy of duplicate detection 
   CDC cannot accurately find the boundary between the changed regions
 
@@ -154,3 +153,78 @@ Chunking of unchanged data can result in different chunks when metadata is inter
 
 - use multicore processors or GPGPU to provide more computing resources
 - divided into independent subtasks to run them parallelly
+
+### Indexing
+
+__Problem__ Index increase exponentially, overflowing the RAM capacity, and finally result in frequent accesses to the low-speed disk for index lookups
+`Approximate deduplication` trades a slightly reduced accuracy for a higher lookup performance and lower memory footprint
+
+#### Four general approaches 
+
+- Locality-based approaches
+  __Locality__ refers to the observation that similar or identical files
+  _improve deduplication indexing performance_
+- Similarity-based approaches
+  __Similarity__ refers to the similar characteristics of files
+  _reduce the RAM overhead_
+- Flash-assisted approaches
+  use a random-access flash memory as an alternative to disks to provide high-throughput I/Os
+  _incur additional hardware costs_
+- Cluster approaches
+  assign data streams by data routing scheme with load balance & intra-node duplicate elimination
+  _avail it scalable for massive storage system_
+
+### Compression
+
+overall compression rate will be higher than compressing every chunk individually.
+
+post-compress can reach a __higher redundancy elimination ratio__ than re-chunking.(compared `re-chunking` with `post-deduplication delta compression`)
+
+- meanwhile, it introduces extra overheads.
+
+Right Now, we focus on the __post-deduplication delta compression__, of the three time-consuming stages
+
+#### Resemblance detection
+
+accurately detect a fairly similar candidate for delta compression
+
+__Manber__ proposes that the similarity between two files is proportional to the fraction of fingerprints.
+__Broder__ proposes that `multi-sample` files into `super-feature`, and use it to index similar files.
+
+#### Delta encoding the similar chunks
+
+delta compression is the time-consuming process of calculating the differences.
+
+__Xdelta__ use a byte-wise sliding window to identify the matched strings
+
+#### Additional delta compression challenges
+
+`reading base-chunks`,`data restore`&`garbage collection` are important factors of compression.
+
+### Data restore
+
+- the chunks physically scattered in containers, with the poor random I/O performance of HDDs, decrease restore performance
+- fragmented chunks make it difficult to do the GC works
+
+#### Primary storage
+
+it makes the read-latency-lengthening fragmentation issue extremely important.
+
+__iDedup__ selectively deduplicate sequential duplicate disk blocks to reduce fragmentation and amortize the read latency
+
+#### Backup storage
+
+the restore speed can drop by orders
+
+__Nam et al.__ selectively eliminate sequential and duplicate chunks with a quantitative metric.
+__RevDedup__ eliminates duplicates from the previous backups while eliminates duplicates from the new backups.
+		 thus shifts the fragmentation to old backups
+
+#### Cloud storage
+
+__CABdedupe__ identifies unmodified data among chronological versions of backup datasets.
+__ASR__ stores unique chunks with high reference counts on SSDs.
+__NED__ groups chunks into segments and identifies the fragmented segments before uploading them to the cloud. 
+
+### Garbage collection
+
