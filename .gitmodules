@@ -1,0 +1,3 @@
+[submodule "destor"]
+	path = destor
+	url = https://github.com/wadwings/destor
